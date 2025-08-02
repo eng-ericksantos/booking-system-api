@@ -1,0 +1,52 @@
+// Este é o seu arquivo de schema do Prisma.
+// Saiba mais sobre ele em https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Servico {
+  id        String @id @default(uuid())
+  nome      String
+  descricao String
+  duracao   Int // duracao em minutos
+  preco     Float
+  agendamentos  Agendamento[] // Um serviço pode ter vários agendamentos
+}
+
+model Profissional {
+  id        String @id @default(uuid())
+  nome      String
+  email     String @unique
+  horariosDisponiveis HorarioDisponivel[] // Um profissional tem vários horários
+  agendamentos        Agendamento[]
+}
+
+model HorarioDisponivel {
+  id              String @id @default(uuid())
+  diaDaSemana     Int // // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+  horaInicio      String // Formato "HH:mm" 
+  horaFim         String // Formato "HH:mm"
+  profissionalId  String
+  profissional    Profissional @relation(fields: [profissionalId], references: [id])
+}
+
+model Agendamento {
+  id              String @id @default(uuid())
+  data            DateTime
+  status          String @default("Confirmado") // Ex: Confirmado, Cancelado, Realizado
+  nomeCliente     String
+  telefoneCliente String
+  servicoId       String
+  servico         Servico @relation(fields: [servicoId], references: [id])
+  profissionalId  String
+  profissional    Profissional @relation(fields: [profissionalId], references: [id])
+  createdAt       DateTime @default(now()) // Valor padrão será a data e a hora exatas do momento da criação do registro
+  updateAt        DateTime @updatedAt // Data e hora atuais toda vez que o registro for modificado
+}
