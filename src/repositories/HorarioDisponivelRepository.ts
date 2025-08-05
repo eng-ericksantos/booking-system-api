@@ -17,6 +17,18 @@ class HorarioDisponivelRepository {
     async delete(id: string) {
         return await prisma.horarioDisponivel.delete({ where: { id } });
     }
+
+    async findByProfissionalAndDia(profissionalId: string, diaDaSemana: number) {
+        return await prisma.horarioDisponivel.findMany({
+            where: {
+                profissionalId,
+                diaDaSemana,
+            },
+            orderBy: {
+                horaInicio: 'asc',
+            },
+        });
+    }
 }
 
 export default new HorarioDisponivelRepository();

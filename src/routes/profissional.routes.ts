@@ -1,14 +1,16 @@
 import { Router } from 'express';
 import ProfissionalController from '../controllers/ProfissionalController';
 import horarioRouter from './horario.routes'; // <-- IMPORTAR
+import { createProfissionalSchema, updateProfissionalSchema } from '../shared/validators/prossifionalValidator';
+import { validate } from '../shared/middlewares/validate';
 
 const profissionalRouter = Router();
 
 // Rotas de Profissional
-profissionalRouter.post('/', ProfissionalController.create);
+profissionalRouter.post('/', validate(createProfissionalSchema), ProfissionalController.create);
 profissionalRouter.get('/', ProfissionalController.findAll);
 profissionalRouter.get('/:id', ProfissionalController.findById);
-profissionalRouter.put('/:id', ProfissionalController.update);
+profissionalRouter.put('/:id', validate(updateProfissionalSchema), ProfissionalController.update);
 profissionalRouter.delete('/:id', ProfissionalController.delete);
 
 // Aninhando o router de horários

@@ -3,6 +3,8 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import servicoRouter from './routes/servico.routes';
 import profissionalRouter from './routes/profissional.routes';
+import agendamentoRouter from './routes/agendamento.routes';
+import { errorHandler } from './shared/middlewares/errorHandler';
 
 // Inicializa a aplicação Express
 const app = express();
@@ -18,6 +20,9 @@ app.get('/health', (req: Request, res: Response) => {
 
 app.use('/api/servicos', servicoRouter);
 app.use('/api/profissionais', profissionalRouter);
+app.use('/api/agendamentos', agendamentoRouter);
+
+app.use(errorHandler);
 
 // Define a porta a partir das variáveis de ambiente ou usa 3001 como padrão
 const PORT = process.env.PORT || 3001;

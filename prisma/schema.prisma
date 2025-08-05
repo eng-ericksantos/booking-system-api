@@ -11,6 +11,12 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum StatusAgendamento {
+  Confirmado
+  Cancelado
+  Realizado
+}
+
 model Servico {
   id        String @id @default(uuid())
   nome      String
@@ -40,7 +46,7 @@ model HorarioDisponivel {
 model Agendamento {
   id              String @id @default(uuid())
   data            DateTime
-  status          String @default("Confirmado") // Ex: Confirmado, Cancelado, Realizado
+  status          StatusAgendamento @default(Confirmado) // Ex: Confirmado, Cancelado, Realizado
   nomeCliente     String
   telefoneCliente String
   servicoId       String
