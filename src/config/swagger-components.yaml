@@ -1,0 +1,92 @@
+components:
+  schemas:
+    # Entidades Principais
+    Profissional:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nome: { type: string }
+        email: { type: string, format: email }
+      example:
+        id: 'd290f1ee-6c54-4b01-90e6-d701748f0851'
+        nome: 'Barbara Almeida'
+        email: 'barbara.a@exemplo.com'
+
+    Servico:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        nome: { type: string }
+        descricao: { type: string }
+        preco: { type: number, format: float }
+        duracao: { type: integer, description: 'Duração do serviço em minutos' }
+      example:
+        id: 'a1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p6'
+        nome: 'Corte de Cabelo Masculino'
+        descricao: 'Corte com máquina e tesoura.'
+        preco: 50
+        duracao: 45
+        
+    HorarioDisponivel:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        diaDaSemana: { type: integer, description: '0=Domingo, 1=Segunda, etc.' }
+        horaInicio: { type: string, format: 'time', example: '09:00' }
+        horaFim: { type: string, format: 'time', example: '18:00' }
+        profissionalId: { type: string, format: uuid }
+
+    Agendamento:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        data: { type: string, format: date-time }
+        status: { type: string, enum: [Confirmado, Cancelado, Realizado] }
+        nomeCliente: { type: string }
+        telefoneCliente: { type: string }
+        profissional: { $ref: '#/components/schemas/Profissional' }
+        servico: { $ref: '#/components/schemas/Servico' }
+
+    # Schemas de Erro
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      example:
+        message: 'Recurso não encontrado.'
+  
+  # Parâmetros Reutilizáveis
+  parameters:
+    ProfissionalId:
+      in: path
+      name: profissionalId
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: O ID do profissional.
+    HorarioId:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: O ID do horário disponível.
+    AgendamentoId:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: O ID do agendamento.
+    ServicoId:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        format: uuid
+      description: O ID do serviço.
