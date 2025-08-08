@@ -9,7 +9,7 @@ const servicoRouter = Router();
  * @swagger
  * tags:
  * name: Serviços
- * description: API para gerenciamento de serviços oferecidos
+ * description: API para gerenciamento de serviços
  */
 
 /**
@@ -19,29 +19,16 @@ const servicoRouter = Router();
  * summary: Cria um novo serviço
  * tags: [Serviços]
  * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Servico'
- * example:
- * nome: "Massagem Relaxante"
- * descricao: "Massagem de 60 minutos para alívio de estresse."
- * preco: 150
- * duracao: 60
+ * $ref: '#/components/requestBodies/ServicoBody'
  * responses:
  * '201':
- * description: Serviço criado com sucesso.
+ * description: Serviço criado.
  * content:
  * application/json:
  * schema:
  * $ref: '#/components/schemas/Servico'
  * '400':
- * description: Dados de entrada inválidos.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/ErrorResponse'
+ * $ref: '#/components/responses/BadRequest'
  */
 servicoRouter.post('/', validate(createServicoSchema), ServicoController.create);
 
@@ -49,11 +36,11 @@ servicoRouter.post('/', validate(createServicoSchema), ServicoController.create)
  * @swagger
  * /api/servicos:
  * get:
- * summary: Retorna a lista de todos os serviços
+ * summary: Lista todos os serviços
  * tags: [Serviços]
  * responses:
  * '200':
- * description: A lista de serviços.
+ * description: Lista de serviços.
  * content:
  * application/json:
  * schema:
@@ -67,10 +54,10 @@ servicoRouter.get('/', ServicoController.findAll);
  * @swagger
  * /api/servicos/{id}:
  * get:
- * summary: Busca um serviço pelo ID
+ * summary: Busca um serviço por ID
  * tags: [Serviços]
  * parameters:
- * - $ref: '#/components/parameters/ServicoId'
+ * - $ref: '#/components/parameters/IdFromPath'
  * responses:
  * '200':
  * description: Dados do serviço.
@@ -79,11 +66,7 @@ servicoRouter.get('/', ServicoController.findAll);
  * schema:
  * $ref: '#/components/schemas/Servico'
  * '404':
- * description: Serviço não encontrado.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/ErrorResponse'
+ * $ref: '#/components/responses/NotFound'
  */
 servicoRouter.get('/:id', ServicoController.findById);
 
@@ -91,27 +74,21 @@ servicoRouter.get('/:id', ServicoController.findById);
  * @swagger
  * /api/servicos/{id}:
  * put:
- * summary: Atualiza um serviço existente
+ * summary: Atualiza um serviço
  * tags: [Serviços]
  * parameters:
- * - $ref: '#/components/parameters/ServicoId'
+ * - $ref: '#/components/parameters/IdFromPath'
  * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/Servico'
- * example:
- * preco: 160
+ * $ref: '#/components/requestBodies/ServicoBody'
  * responses:
  * '200':
- * description: Serviço atualizado com sucesso.
+ * description: Serviço atualizado.
  * content:
  * application/json:
  * schema:
  * $ref: '#/components/schemas/Servico'
  * '404':
- * description: Serviço não encontrado.
+ * $ref: '#/components/responses/NotFound'
  */
 servicoRouter.put('/:id', ServicoController.update);
 
@@ -122,12 +99,12 @@ servicoRouter.put('/:id', ServicoController.update);
  * summary: Deleta um serviço
  * tags: [Serviços]
  * parameters:
- * - $ref: '#/components/parameters/ServicoId'
+ * - $ref: '#/components/parameters/IdFromPath'
  * responses:
  * '204':
- * description: Serviço deletado com sucesso.
+ * $ref: '#/components/responses/NoContent'
  * '404':
- * description: Serviço não encontrado.
+ * $ref: '#/components/responses/NotFound'
  */
 servicoRouter.delete('/:id', ServicoController.delete);
 

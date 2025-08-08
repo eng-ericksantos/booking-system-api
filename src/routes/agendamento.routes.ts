@@ -19,30 +19,16 @@ const agendamentoRouter = Router();
  * summary: Cria um novo agendamento
  * tags: [Agendamentos]
  * requestBody:
- * required: true
+ * $ref: '#/components/requestBodies/AgendamentoBody'
+ * responses:
+ * '201':
+ * description: Agendamento criado.
  * content:
  * application/json:
  * schema:
- * type: object
- * properties:
- * servicoId: { type: string, format: uuid }
- * profissionalId: { type: string, format: uuid }
- * nomeCliente: { type: string }
- * telefoneCliente: { type: string }
- * data: { type: string, format: 'date-time' }
- * example:
- * servicoId: "a1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p6"
- * profissionalId: "d290f1ee-6c54-4b01-90e6-d701748f0851"
- * nomeCliente: "Juliana Paes"
- * telefoneCliente: "21912345678"
- * data: "2025-10-27T14:00:00.000Z"
- * responses:
- * 201:
- * description: Agendamento criado com sucesso.
- * content: { "application/json": { schema: { $ref: '#/components/schemas/Agendamento' } } }
- * 409:
- * description: Conflito - Horário indisponível ou regra de negócio violada.
- * content: { "application/json": { schema: { $ref: '#/components/schemas/ErrorResponse' } } }
+ * $ref: '#/components/schemas/Agendamento'
+ * '409':
+ * $ref: '#/components/responses/Conflict'
  */
 agendamentoRouter.post('/', validate(createAgendamentoSchema), AgendamentoController.create);
 
@@ -50,11 +36,11 @@ agendamentoRouter.post('/', validate(createAgendamentoSchema), AgendamentoContro
  * @swagger
  * /api/agendamentos:
  * get:
- * summary: Retorna a lista de todos os agendamentos
+ * summary: Lista todos os agendamentos
  * tags: [Agendamentos]
  * responses:
- * 200:
- * description: A lista de agendamentos.
+ * '200':
+ * description: Lista de agendamentos.
  * content:
  * application/json:
  * schema:
@@ -71,25 +57,18 @@ agendamentoRouter.get('/', AgendamentoController.findAll);
  * summary: Atualiza o status de um agendamento
  * tags: [Agendamentos]
  * parameters:
- * - $ref: '#/components/parameters/AgendamentoId'
+ * - $ref: '#/components/parameters/IdFromPath'
  * requestBody:
- * required: true
+ * $ref: '#/components/requestBodies/UpdateStatusBody'
+ * responses:
+ * '200':
+ * description: Status atualizado.
  * content:
  * application/json:
  * schema:
- * type: object
- * properties:
- * status:
- * type: string
- * enum: [Confirmado, Cancelado, Realizado]
- * example:
- * status: "Realizado"
- * responses:
- * 200:
- * description: Status atualizado com sucesso.
- * content: { "application/json": { schema: { $ref: '#/components/schemas/Agendamento' } } }
- * 404:
- * description: Agendamento não encontrado.
+ * $ref: '#/components/schemas/Agendamento'
+ * '404':
+ * $ref: '#/components/responses/NotFound'
  */
 agendamentoRouter.patch('/:id/status', validate(updateAgendamentoStatusSchema), AgendamentoController.updateStatus);
 

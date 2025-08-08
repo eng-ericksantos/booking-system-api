@@ -20,30 +20,16 @@ const profissionalRouter = Router();
  * summary: Cria um novo profissional
  * tags: [Profissionais]
  * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * type: object
- * properties:
- * nome: { type: string }
- * email: { type: string, format: email }
- * example:
- * nome: "Dr. House"
- * email: "house@example.com"
+ * $ref: '#/components/requestBodies/ProfissionalBody'
  * responses:
  * '201':
- * description: O profissional foi criado com sucesso.
+ * description: Profissional criado.
  * content:
  * application/json:
  * schema:
  * $ref: '#/components/schemas/Profissional'
  * '400':
- * description: Dados de entrada inválidos ou e-mail já existente.
- * content:
- * application/json:
- * schema:
- * $ref: '#/components/schemas/ErrorResponse'
+ * $ref: '#/components/responses/BadRequest'
  */
 profissionalRouter.post('/', validate(createProfissionalSchema), ProfissionalController.create);
 
@@ -51,11 +37,11 @@ profissionalRouter.post('/', validate(createProfissionalSchema), ProfissionalCon
  * @swagger
  * /api/profissionais:
  * get:
- * summary: Retorna a lista de todos os profissionais
+ * summary: Lista todos os profissionais
  * tags: [Profissionais]
  * responses:
  * '200':
- * description: A lista de profissionais.
+ * description: Lista de profissionais.
  * content:
  * application/json:
  * schema:
@@ -69,16 +55,10 @@ profissionalRouter.get('/', ProfissionalController.findAll);
  * @swagger
  * /api/profissionais/{id}:
  * get:
- * summary: Busca um profissional pelo ID
+ * summary: Busca um profissional por ID
  * tags: [Profissionais]
  * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: string
- * format: uuid
- * description: O ID do profissional.
+ * - $ref: '#/components/parameters/IdFromPath'
  * responses:
  * '200':
  * description: Dados do profissional.
@@ -87,7 +67,7 @@ profissionalRouter.get('/', ProfissionalController.findAll);
  * schema:
  * $ref: '#/components/schemas/Profissional'
  * '404':
- * description: Profissional não encontrado.
+ * $ref: '#/components/responses/NotFound'
  */
 profissionalRouter.get('/:id', ProfissionalController.findById);
 
@@ -95,35 +75,21 @@ profissionalRouter.get('/:id', ProfissionalController.findById);
  * @swagger
  * /api/profissionais/{id}:
  * put:
- * summary: Atualiza um profissional existente
+ * summary: Atualiza um profissional
  * tags: [Profissionais]
  * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: string
- * format: uuid
+ * - $ref: '#/components/parameters/IdFromPath'
  * requestBody:
- * required: true
- * content:
- * application/json:
- * schema:
- * type: object
- * properties:
- * nome: { type: string }
- * email: { type: string, format: email }
- * example:
- * nome: "Dr. Gregory House"
+ * $ref: '#/components/requestBodies/ProfissionalBody'
  * responses:
  * '200':
- * description: Profissional atualizado com sucesso.
+ * description: Profissional atualizado.
  * content:
  * application/json:
  * schema:
  * $ref: '#/components/schemas/Profissional'
  * '404':
- * description: Profissional não encontrado.
+ * $ref: '#/components/responses/NotFound'
  */
 profissionalRouter.put('/:id', validate(updateProfissionalSchema), ProfissionalController.update);
 
@@ -134,20 +100,14 @@ profissionalRouter.put('/:id', validate(updateProfissionalSchema), ProfissionalC
  * summary: Deleta um profissional
  * tags: [Profissionais]
  * parameters:
- * - in: path
- * name: id
- * required: true
- * schema:
- * type: string
- * format: uuid
+ * - $ref: '#/components/parameters/IdFromPath'
  * responses:
  * '204':
- * description: Profissional deletado com sucesso.
+ * $ref: '#/components/responses/NoContent'
  * '404':
- * description: Profissional não encontrado.
+ * $ref: '#/components/responses/NotFound'
  */
 profissionalRouter.delete('/:id', ProfissionalController.delete);
-
 
 profissionalRouter.use('/:profissionalId/horarios', horarioRouter);
 

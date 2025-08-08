@@ -9,33 +9,28 @@ const horarioRouter = Router({ mergeParams: true });
  * @swagger
  * tags:
  * name: Horários
- * description: Gerenciamento de horários de trabalho dos profissionais
+ * description: Gerenciamento dos horários de trabalho dos profissionais
  */
 
 /**
  * @swagger
  * /api/profissionais/{profissionalId}/horarios:
  * post:
- * summary: Cria um novo horário de trabalho para um profissional
+ * summary: Cria um novo horário para um profissional
  * tags: [Horários]
  * parameters:
- * - $ref: '#/components/parameters/ProfissionalId'
+ * - $ref: '#/components/parameters/ProfissionalIdFromPath'
  * requestBody:
- * required: true
+ * $ref: '#/components/requestBodies/HorarioBody'
+ * responses:
+ * '201':
+ * description: Horário criado.
  * content:
  * application/json:
  * schema:
- * type: object
- * properties:
- * diaDaSemana: { type: integer, example: 1 }
- * horaInicio: { type: string, example: '09:00' }
- * horaFim: { type: string, example: '18:00' }
- * responses:
- * 201:
- * description: Horário criado com sucesso.
- * content: { "application/json": { schema: { $ref: '#/components/schemas/HorarioDisponivel' } } }
- * 409:
- * description: Conflito de horário.
+ * $ref: '#/components/schemas/HorarioDisponivel'
+ * '409':
+ * $ref: '#/components/responses/Conflict'
  */
 horarioRouter.post('/', validate(createHorarioSchema), HorarioDisponivelController.create);
 
@@ -43,12 +38,12 @@ horarioRouter.post('/', validate(createHorarioSchema), HorarioDisponivelControll
  * @swagger
  * /api/profissionais/{profissionalId}/horarios:
  * get:
- * summary: Lista todos os horários de trabalho de um profissional
+ * summary: Lista os horários de um profissional
  * tags: [Horários]
  * parameters:
- * - $ref: '#/components/parameters/ProfissionalId'
+ * - $ref: '#/components/parameters/ProfissionalIdFromPath'
  * responses:
- * 200:
+ * '200':
  * description: Lista de horários.
  * content:
  * application/json:
@@ -56,8 +51,8 @@ horarioRouter.post('/', validate(createHorarioSchema), HorarioDisponivelControll
  * type: array
  * items:
  * $ref: '#/components/schemas/HorarioDisponivel'
- * 404:
- * description: Profissional não encontrado.
+ * '404':
+ * $ref: '#/components/responses/NotFound'
  */
 horarioRouter.get('/', HorarioDisponivelController.findByProfissionalId);
 
@@ -65,16 +60,16 @@ horarioRouter.get('/', HorarioDisponivelController.findByProfissionalId);
  * @swagger
  * /api/profissionais/{profissionalId}/horarios/{id}:
  * delete:
- * summary: Deleta um horário de trabalho específico
+ * summary: Deleta um horário de um profissional
  * tags: [Horários]
  * parameters:
- * - $ref: '#/components/parameters/ProfissionalId'
- * - $ref: '#/components/parameters/HorarioId'
+ * - $ref: '#/components/parameters/ProfissionalIdFromPath'
+ * - $ref: '#/components/parameters/IdFromPath'
  * responses:
- * 204:
- * description: Horário deletado com sucesso.
- * 404:
- * description: Horário não encontrado.
+ * '204':
+ * $ref: '#/components/responses/NoContent'
+ * '404':
+ * $ref: '#/components/responses/NotFound'
  */
 horarioRouter.delete('/:id', validate(horarioIdSchema), HorarioDisponivelController.delete);
 
