@@ -5,8 +5,8 @@ const swaggerSpec = {
         version: '1.0.0',
         description: 'API para o sistema de agendamentos, documentada com Swagger.',
         contact: {
-            name: 'Erick',
-            email: 'seu-email@exemplo.com',
+            name: 'Erick A. dos Santos',
+            email: 'eng.erickalessandro@gmail.com',
         },
     },
     servers: [
