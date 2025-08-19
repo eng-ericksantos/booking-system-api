@@ -34,11 +34,48 @@ Uma plataforma de agendamento online para prestadores de serviço (barbeiros, m�
 
 ## 🗂️ Entidades / Modelagem
 
-| Entidade             | Atributos principais                                                  |
-|----------------------|-----------------------------------------------------------------------|
-| **Serviço**          | `id`, `nome`, `descrição`, `duracaoMinutos`, `preco`                  |
-| **HorárioDisponível**| `id`, `profissionalId`, `diaSemana`, `horaInicio`, `horaFim`          |
-| **Agendamento**      | `id`, `clienteNome`, `clienteContato`, `servicoId`, `dataHora`, `status`<br/>(`Confirmado`, `Cancelado`, `Realizado`) |
+## 📑 Estrutura do Banco de Dados
+
+| **Entidade / Enum**      | **Campo / Valor**   | **Tipo**       | **Restrições / Observações** |
+|---------------------------|---------------------|----------------|------------------------------|
+| **Usuario**              | id                  | String (uuid)  | **PK**, default: `uuid()` |
+|                           | email               | String         | **Único** |
+|                           | senha               | String         | — |
+|                           | role                | Role           | Default: `PROFISSIONAL` |
+|                           | profissional        | Profissional?  | Relação opcional |
+| **Profissional**         | id                  | String (uuid)  | **PK**, default: `uuid()` |
+|                           | nome                | String         | — |
+|                           | usuarioId           | String (uuid)  | **Único**, **FK → Usuario.id** |
+|                           | usuario             | Usuario        | Relação obrigatória |
+|                           | horariosDisponiveis | HorarioDisponivel[] | 1:N |
+|                           | agendamentos        | Agendamento[]  | 1:N |
+| **Servico**              | id                  | String (uuid)  | **PK**, default: `uuid()` |
+|                           | nome                | String         | — |
+|                           | descricao           | String         | — |
+|                           | duracao             | Int            | Duração em minutos |
+|                           | preco               | Float          | — |
+|                           | agendamentos        | Agendamento[]  | 1:N |
+| **HorarioDisponivel**    | id                  | String (uuid)  | **PK**, default: `uuid()` |
+|                           | diaDaSemana         | Int            | 0=Dom, 6=Sáb |
+|                           | horaInicio          | String         | Formato `HH:mm` |
+|                           | horaFim             | String         | Formato `HH:mm` |
+|                           | profissionalId      | String (uuid)  | **FK → Profissional.id** |
+|                           | profissional        | Profissional   | Relação obrigatória |
+| **Agendamento**          | id                  | String (uuid)  | **PK**, default: `uuid()` |
+|                           | data                | DateTime       | — |
+|                           | status              | StatusAgendamento | Default: `Confirmado` |
+|                           | nomeCliente         | String         | — |
+|                           | telefoneCliente     | String         | — |
+|                           | servicoId           | String (uuid)  | **FK → Servico.id** |
+|                           | profissionalId      | String (uuid)  | **FK → Profissional.id** |
+|                           | createdAt           | DateTime       | Default: `now()` |
+|                           | updateAt            | DateTime       | Auto `@updatedAt` |
+| **Enum Role**            | ADMIN               | —              | Perfil administrador |
+|                           | PROFISSIONAL        | —              | Perfil profissional |
+| **Enum StatusAgendamento** | Confirmado         | —              | Default |
+|                           | Cancelado           | —              | — |
+|                           | Realizado           | —              | — |
+
 
 ---
 
