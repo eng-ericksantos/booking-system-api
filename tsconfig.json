@@ -8,7 +8,11 @@
     "forceConsistentCasingInFileNames": true, // Garante que os nomes de arquivos sejam consistentes
     "strict": true, // Habilita todas as checagens de tipo estritas
     "skipLibCheck": true, // Pula a checagem de tipos em arquivos de declaração (.d.ts)
-    "sourceMap": true // Gera source maps para facilitar o debug
+    "sourceMap": true, // Gera source maps para facilitar o debug
+    "typeRoots": [
+      "./node_modules/@types",
+      "./src/shared/types"
+    ]
   },
   "include": ["src/**/*"], // Inclui todos os arquivos dentro da pasta src
   "exclude": ["node_modules", "**/*.spec.ts"] // Exclui a pasta de dependências e testes

@@ -17,6 +17,21 @@ enum StatusAgendamento {
   Realizado
 }
 
+enum Role {
+  ADMIN
+  PROFISSIONAL
+}
+
+model Usuario {
+  id           String  @id @default(uuid())
+  email        String  @unique
+  senha        String
+  role         Role    @default(PROFISSIONAL)
+  
+  // Relação opcional com Profissional
+  profissional Profissional?
+}
+
 model Servico {
   id        String @id @default(uuid())
   nome      String
@@ -29,9 +44,10 @@ model Servico {
 model Profissional {
   id        String @id @default(uuid())
   nome      String
-  email     String @unique
   horariosDisponiveis HorarioDisponivel[] // Um profissional tem vários horários
   agendamentos        Agendamento[]
+  usuarioId String  @unique // Cada profissional está ligado a um único usuário
+  usuario   Usuario @relation(fields: [usuarioId], references: [id])
 }
 
 model HorarioDisponivel {

@@ -1,20 +1,23 @@
-import 'dotenv/config'; // Carrega as variáveis de ambiente do .env
+import 'dotenv/config';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import servicoRouter from './routes/servico.routes';
-import profissionalRouter from './routes/profissional.routes';
-import agendamentoRouter from './routes/agendamento.routes';
-import { errorHandler } from './shared/middlewares/errorHandler';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { pinoHttp } from 'pino-http';
 import logger from './shared/logs/logger';
+import { errorHandler } from './shared/middlewares/errorHandler';
+
+// Imports das rotas
+import authRouter from './routes/auth.routes';
+import servicoRouter from './routes/servico.routes';
+import profissionalRouter from './routes/profissional.routes';
+import agendamentoRouter from './routes/agendamento.routes';
+
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger';
 
 // Inicializa a aplicação Express
 const app = express();
-
 
 // Middlewares
 app.use(pinoHttp({ logger }));
@@ -45,6 +48,7 @@ app.get('/health', (req: Request, res: Response) => {
 app.use('/api/servicos', servicoRouter);
 app.use('/api/profissionais', profissionalRouter);
 app.use('/api/agendamentos', agendamentoRouter);
+app.use('/api', authRouter);
 
 // Rota da Documentação Swagger
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
