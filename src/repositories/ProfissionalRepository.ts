@@ -1,3 +1,4 @@
+import { injectable, singleton } from 'tsyringe';
 import { prisma } from '../shared/prisma';
 import { Profissional } from '@prisma/client';
 
@@ -19,8 +20,9 @@ export type ProfissionalUpdateData = {
         }
     }
 };
-
-class ProfissionalRepository {
+@singleton()
+@injectable()
+export default class ProfissionalRepository {
     async findAll() {
         return await prisma.profissional.findMany({
             include: {
@@ -71,5 +73,3 @@ class ProfissionalRepository {
         return await prisma.profissional.delete({ where: { id } });
     }
 }
-
-export default new ProfissionalRepository();

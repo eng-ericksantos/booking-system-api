@@ -1,18 +1,27 @@
+import { inject, injectable, singleton } from 'tsyringe';
 import HorarioDisponivelRepository, { HorarioCreateDTO } from '../repositories/HorarioDisponivelRepository';
 import ProfissionalService from './ProfissionalService';
 
-class HorarioDisponivelService {
+@singleton()
+@injectable()
+export default class HorarioDisponivelService {
+
+    constructor(
+        @inject('HorarioDisponivelRepository') private horarioDisponivelRepository: HorarioDisponivelRepository,
+        @inject('ProfissionalService') private profissionalService: ProfissionalService
+    ) { }
+
     async findByProfissionalId(profissionalId: string) {
-        await ProfissionalService.findById(profissionalId);
-        return await HorarioDisponivelRepository.findByProfissionalId(profissionalId);
+        await this.profissionalService.findById(profissionalId);
+        return await this.horarioDisponivelRepository.findByProfissionalId(profissionalId);
     }
 
     async create(data: HorarioCreateDTO) {
         const { profissionalId, diaDaSemana, horaInicio, horaFim } = data;
 
-        await ProfissionalService.findById(profissionalId);
+        await this.profissionalService.findById(profissionalId);
 
-        const horariosExistentes = await HorarioDisponivelRepository.findByProfissionalAndDia(
+        const horariosExistentes = await this.horarioDisponivelRepository.findByProfissionalAndDia(
             profissionalId,
             diaDaSemana
         );
@@ -26,13 +35,11 @@ class HorarioDisponivelService {
         }
 
         // Se tudo estiver certo, cria o horário
-        return await HorarioDisponivelRepository.create(data);
+        return await this.horarioDisponivelRepository.create(data);
     }
 
     async delete(id: string) {
-        // Adicionar uma lógica para checar se o horário existe antes de deletar
-        return await HorarioDisponivelRepository.delete(id);
+        // TODO Adicionar uma lógica para checar se o horário existe antes de deletar
+        return await this.horarioDisponivelRepository.delete(id);
     }
 }
-
-export default new HorarioDisponivelService();

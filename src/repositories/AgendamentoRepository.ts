@@ -1,9 +1,11 @@
+import { injectable, singleton } from 'tsyringe';
 import { prisma } from '../shared/prisma';
 import { Agendamento, StatusAgendamento } from '@prisma/client';
 
 export type AgendamentoCreateDTO = Omit<Agendamento, 'id' | 'status' | 'createdAt' | 'updatedAt'>;
-
-class AgendamentoRepository {
+@singleton()
+@injectable()
+export default class AgendamentoRepository {
   async create(data: AgendamentoCreateDTO) {
     return await prisma.agendamento.create({ data });
   }
@@ -54,5 +56,3 @@ class AgendamentoRepository {
     return agendamento;
   }
 }
-
-export default new AgendamentoRepository();

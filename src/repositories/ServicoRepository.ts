@@ -1,10 +1,12 @@
 import { Servico } from "@prisma/client";
 import { prisma } from "../shared/prisma";
+import { injectable, singleton } from "tsyringe";
 
 // DTO (Data Transfer Object) para a criação de um serviço.
 export type ServicoCreateDTO = Omit<Servico, 'id'>;
-
-class ServicoRepository {
+@singleton()
+@injectable()
+export default class ServicoRepository {
 
     async findAll() {
         return await prisma.servico.findMany();
@@ -35,5 +37,3 @@ class ServicoRepository {
         });
     }
 }
-
-export default new ServicoRepository();

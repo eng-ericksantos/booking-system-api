@@ -1,28 +1,30 @@
 import { Request, Response } from 'express';
+import { inject, injectable } from 'tsyringe';
 import AgendamentoService from '../services/AgendamentoService';
 
-class AgendamentoController {
-    async create(req: Request, res: Response) {
-        // O corpo da requisição deve conter:
-        // servicoId, profissionalId, data, nomeCliente, telefoneCliente
-        const agendamento = await AgendamentoService.create(req.body);
-        res.status(201).json(agendamento);
+@injectable()
+export default class AgendamentoController {
+
+    constructor(
+        @inject('AgendamentoService') private agendamentoService: AgendamentoService
+    ) { }
+
+    public async create(req: Request, res: Response): Promise<Response> {
+        // 3. Usa a instância do serviço que foi injetada e armazenada na propriedade da classe
+        const resultado = await this.agendamentoService.create(req.body);
+        return res.status(201).json(resultado);
     }
 
-    async findAll(req: Request, res: Response) {
-        const agendamentos = await AgendamentoService.findAll();
-        res.status(200).json(agendamentos);
+    public async findAll(req: Request, res: Response): Promise<Response> {
+        const agendamentos = await this.agendamentoService.findAll();
+        return res.status(200).json(agendamentos);
     }
 
-    async updateStatus(req: Request, res: Response) {
+    public async updateStatus(req: Request, res: Response): Promise<Response> {
         const { id } = req.params;
-        const { status } = req.body; // ex: "Realizado"
+        const { status } = req.body;
 
-        // O serviço irá validar se o status é um valor válido do Enum
-        const agendamento = await AgendamentoService.updateStatus(id, status);
-        res.status(200).json(agendamento);
+        const agendamento = await this.agendamentoService.updateStatus(id, status);
+        return res.status(200).json(agendamento);
     }
-
 }
-
-export default new AgendamentoController();

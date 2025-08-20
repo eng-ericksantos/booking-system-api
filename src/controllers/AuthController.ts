@@ -1,16 +1,20 @@
 import { Request, Response } from 'express';
+import { injectable, inject } from 'tsyringe'; // Importar decorators
 import AuthService from '../services/AuthService';
 
-class AuthController {
-    async login(req: Request, res: Response) {
+@injectable()
+export default class AuthController {
+
+    constructor(
+        @inject('AuthService') private authService: AuthService
+    ) { }
+
+    public async login(req: Request, res: Response): Promise<Response> {
         try {
-            const { email, senha } = req.body;
-            const resultado = await AuthService.login({ email, senha });
-            res.status(200).json(resultado);
+            const resultado = await this.authService.login(req.body);
+            return res.status(200).json(resultado);
         } catch (error: any) {
-            res.status(401).json({ error: error.message }); // 401 Unauthorized
+            return res.status(401).json({ error: error.message });
         }
     }
 }
-
-export default new AuthController();

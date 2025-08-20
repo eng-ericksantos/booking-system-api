@@ -1,15 +1,23 @@
 import bcrypt from 'bcryptjs';
 import jwt, { Secret } from 'jsonwebtoken';
 import UsuarioRepository from '../repositories/UsuarioRepository';
+import { inject, injectable, singleton } from 'tsyringe';
 
 type LoginDTO = {
     email: string;
     senha: string;
 };
 
-class AuthService {
+@singleton()
+@injectable()
+export default class AuthService {
+
+    constructor(
+        @inject('UsuarioRepository') private usuarioRepository: UsuarioRepository // tsyringe injeta o UsuarioRepository
+    ) { }
+
     async login({ email, senha }: LoginDTO) {
-        const usuario = await UsuarioRepository.findByEmail(email);
+        const usuario = await this.usuarioRepository.findByEmail(email);
         if (!usuario) {
             throw new Error('E-mail ou senha inválidos.');
         }
@@ -19,12 +27,10 @@ class AuthService {
             throw new Error('E-mail ou senha inválidos.');
         }
 
-        // --- SOLUÇÃO DEFINITIVA PARA expiresIn ---
-
         const secret: Secret = process.env.JWT_SECRET || '';
 
-        // 1. Lemos a variável de ambiente para segundos e a convertemos para número.
-        //    Fornecemos um padrão de 86400 segundos (1 dia) se não for definida.
+        // Lemos a variável de ambiente para segundos e a convertemos para número.
+        // Fornece um padrão de 86400 segundos (1 dia) se não for definida.
         const expiresInSeconds = parseInt(process.env.JWT_EXPIRES_IN_SECONDS || '86400', 10);
 
         if (!secret) {
@@ -37,8 +43,6 @@ class AuthService {
             role: usuario.role,
         };
 
-        // 2. Passamos o valor NUMÉRICO para expiresIn.
-        // Isso evita o erro de tipo 'StringValue' de uma vez por todas.
         const options = {
             expiresIn: expiresInSeconds,
         };
@@ -53,5 +57,3 @@ class AuthService {
         };
     }
 }
-
-export default new AuthService();

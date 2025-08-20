@@ -1,4 +1,6 @@
+import 'reflect-metadata';
 import 'dotenv/config';
+import './shared/container';
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';

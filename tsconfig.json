@@ -9,6 +9,8 @@
     "strict": true, // Habilita todas as checagens de tipo estritas
     "skipLibCheck": true, // Pula a checagem de tipos em arquivos de declaração (.d.ts)
     "sourceMap": true, // Gera source maps para facilitar o debug
+    "experimentalDecorators": true, // Habilitando Decorators para o tsyringe utilizar a injeção de dependências
+    "emitDecoratorMetadata": true,
     "typeRoots": [
       "./node_modules/@types",
       "./src/shared/types"

@@ -1,9 +1,11 @@
+import { injectable, singleton } from 'tsyringe';
 import { prisma } from '../shared/prisma';
 import { HorarioDisponivel } from '@prisma/client';
 
 export type HorarioCreateDTO = Omit<HorarioDisponivel, 'id'>;
-
-class HorarioDisponivelRepository {
+@singleton()
+@injectable()
+export default class HorarioDisponivelRepository {
     async findByProfissionalId(profissionalId: string) {
         return await prisma.horarioDisponivel.findMany({
             where: { profissionalId },
@@ -30,5 +32,3 @@ class HorarioDisponivelRepository {
         });
     }
 }
-
-export default new HorarioDisponivelRepository();

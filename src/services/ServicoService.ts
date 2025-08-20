@@ -1,12 +1,20 @@
+import { inject, injectable, singleton } from 'tsyringe';
 import ServicoRepository, { ServicoCreateDTO } from '../repositories/ServicoRepository';
 
-class ServicoService {
+@singleton()
+@injectable()
+export default class ServicoService {
+
+    constructor(
+        @inject('ServicoRepository') private servicoRepository: ServicoRepository
+    ) { }
+
     async findAll() {
-        return await ServicoRepository.findAll();
+        return await this.servicoRepository.findAll();
     }
 
     async findById(id: string) {
-        const servico = await ServicoRepository.findById(id);
+        const servico = await this.servicoRepository.findById(id);
         if (!servico) {
             throw new Error('Serviço não encontrado');
         }
@@ -17,18 +25,16 @@ class ServicoService {
         if (servicoData.preco < 0) {
             throw new Error('O preço do serviço não pode ser negativo.');
         }
-        return await ServicoRepository.create(servicoData);
+        return await this.servicoRepository.create(servicoData);
     }
 
     async update(id: string, servicoData: Partial<ServicoCreateDTO>) {
         await this.findById(id);
-        return await ServicoRepository.update(id, servicoData);
+        return await this.servicoRepository.update(id, servicoData);
     }
 
     async delete(id: string) {
         await this.findById(id);
-        return await ServicoRepository.delete(id);
+        return await this.servicoRepository.delete(id);
     }
 }
-
-export default new ServicoService();

@@ -1,6 +1,7 @@
 import ProfissionalRepository from '../repositories/ProfissionalRepository';
 import bcrypt from 'bcryptjs';
 import UsuarioRepository from '../repositories/UsuarioRepository';
+import { inject, injectable, singleton } from 'tsyringe';
 
 // Este DTO representa os dados que chegam da "borda" da aplicação (do controller).
 // Ele contém a senha em texto plano.
@@ -10,13 +11,21 @@ export type ProfissionalRegistrationDTO = {
     senha: string;
 };
 
-class ProfissionalService {
+@singleton()
+@injectable()
+export default class ProfissionalService {
+
+    constructor(
+        @inject('ProfissionalRepository') private profissionalRepository: ProfissionalRepository,
+        @inject('UsuarioRepository') private usuarioRepository: UsuarioRepository
+    ) { }
+
     async findAll() {
-        return await ProfissionalRepository.findAll();
+        return await this.profissionalRepository.findAll();
     }
 
     async findById(id: string) {
-        const profissional = await ProfissionalRepository.findById(id);
+        const profissional = await this.profissionalRepository.findById(id);
         if (!profissional) {
             throw new Error('Profissional não encontrado');
         }
@@ -25,7 +34,7 @@ class ProfissionalService {
 
     async create(data: ProfissionalRegistrationDTO) {
         // 1. Validar se o e-mail já existe na tabela de usuários
-        const existingProfissional = await UsuarioRepository.findByEmail(data.email);
+        const existingProfissional = await this.usuarioRepository.findByEmail(data.email);
 
         if (existingProfissional) {
             throw new Error('Este e-mail já está sendo utilizado por outro profissional.');
@@ -36,7 +45,7 @@ class ProfissionalService {
 
         // 3. Criar o usuário e o profissional em uma única transação
         // O Prisma garante que ou tudo funciona, ou nada é salvo.
-        const novoProfissional = await ProfissionalRepository.create({
+        const novoProfissional = await this.profissionalRepository.create({
             nome: data.nome,
             usuario: {
                 email: data.email,
@@ -49,13 +58,11 @@ class ProfissionalService {
 
     async update(id: string, data: Partial<ProfissionalRegistrationDTO>) {
         await this.findById(id);
-        return await ProfissionalRepository.update(id, data);
+        return await this.profissionalRepository.update(id, data);
     }
 
     async delete(id: string) {
         await this.findById(id);
-        return await ProfissionalRepository.delete(id);
+        return await this.profissionalRepository.delete(id);
     }
 }
-
-export default new ProfissionalService();
