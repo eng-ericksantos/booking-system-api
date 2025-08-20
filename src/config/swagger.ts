@@ -31,6 +31,13 @@ const swaggerSpec = {
       Agendamento: { type: 'object', properties: { id: { type: 'string', format: 'uuid' }, data: { type: 'string', format: 'date-time' }, status: { type: 'string', enum: ['Confirmado', 'Cancelado', 'Realizado'] }, nomeCliente: { type: 'string' }, telefoneCliente: { type: 'string' }}},
       ErrorResponse: { type: 'object', properties: { message: { type: 'string' }}},
     },
+    securitySchemes: {
+      bearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+      },
+    }
   },
   paths: {
     // ========= Autenticação =========
