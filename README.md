@@ -7,7 +7,7 @@ Uma plataforma de agendamento online para prestadores de serviço (barbeiros, m�
 ## 📋 Sumário
 
 - [Funcionalidades](#funcionalidades)  
-- [Entidades / Modelagem](#entidades--modelagem)  
+- [Estrutura do Banco de Dados](#estrutura--banco--dados)  
 - [Tecnologias](#tecnologias)  
 - [Pré-requisitos](#pré-requisitos)  
 
