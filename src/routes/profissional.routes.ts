@@ -4,10 +4,12 @@ import horarioRouter from './horario.routes';
 import { validate } from '../shared/middlewares/validate';
 import { createProfissionalSchema, updateProfissionalSchema } from '../shared/validators/prossifionalValidator';
 import { authMiddleware } from '../shared/middlewares/authMiddleware';
+import { authorize } from '../shared/middlewares/authorizeMiddleware';
+import { Role } from '@prisma/client';
 
 const profissionalRouter = Router();
 
-profissionalRouter.post('/', validate(createProfissionalSchema), ProfissionalController.create);
+profissionalRouter.post('/', authMiddleware, authorize([Role.ADMIN]), validate(createProfissionalSchema), ProfissionalController.create);
 profissionalRouter.get('/', authMiddleware, ProfissionalController.findAll);
 profissionalRouter.get('/:id', authMiddleware, ProfissionalController.findById);
 profissionalRouter.put('/:id', authMiddleware, validate(updateProfissionalSchema), ProfissionalController.update);
