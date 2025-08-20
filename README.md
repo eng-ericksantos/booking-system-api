@@ -32,8 +32,6 @@ Uma plataforma de agendamento online para prestadores de serviço (barbeiros, m�
 
 ---
 
-## 🗂️ Entidades / Modelagem
-
 ## 📑 Estrutura do Banco de Dados
 
 | **Entidade / Enum**      | **Campo / Valor**   | **Tipo**       | **Restrições / Observações** |
@@ -100,7 +98,7 @@ Uma plataforma de agendamento online para prestadores de serviço (barbeiros, m�
 
 ---
 
-## Comandos do Dia a Dia
+## 🗂️ Comandos do Dia a Dia
 
 ---
 
