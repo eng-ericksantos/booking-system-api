@@ -8,8 +8,8 @@ import { container } from 'tsyringe';
 const horarioRouter = Router({ mergeParams: true });
 const horarioDisponivelController = container.resolve(HorarioDisponivelController);
 
-horarioRouter.post('/', authMiddleware, validate(createHorarioSchema), horarioDisponivelController.create);
-horarioRouter.get('/', authMiddleware, horarioDisponivelController.findByProfissionalId);
-horarioRouter.delete('/:id', authMiddleware, validate(horarioIdSchema), horarioDisponivelController.delete);
+horarioRouter.post('/', authMiddleware, validate(createHorarioSchema), (req, res) => horarioDisponivelController.create(req, res));
+horarioRouter.get('/', authMiddleware, (req, res) => horarioDisponivelController.findByProfissionalId(req, res));
+horarioRouter.delete('/:id', authMiddleware, validate(horarioIdSchema), (req, res) => horarioDisponivelController.delete(req, res));
 
 export default horarioRouter;

@@ -8,8 +8,8 @@ import { container } from 'tsyringe';
 const agendamentoRouter = Router();
 const agendamentoController = container.resolve(AgendamentoController);
 
-agendamentoRouter.post('/', authMiddleware, validate(createAgendamentoSchema), agendamentoController.create);
-agendamentoRouter.get('/', authMiddleware, agendamentoController.findAll);
-agendamentoRouter.patch('/:id/status', authMiddleware, validate(updateAgendamentoStatusSchema), agendamentoController.updateStatus);
+agendamentoRouter.post('/', authMiddleware, validate(createAgendamentoSchema), (req, res) => agendamentoController.create(req, res));
+agendamentoRouter.get('/', authMiddleware, (req, res) => agendamentoController.findAll(req, res));
+agendamentoRouter.patch('/:id/status', authMiddleware, validate(updateAgendamentoStatusSchema), (req, res) => agendamentoController.updateStatus(req, res));
 
 export default agendamentoRouter;

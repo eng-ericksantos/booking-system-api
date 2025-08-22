@@ -8,10 +8,10 @@ import { container } from 'tsyringe';
 const servicoRouter = Router();
 const servicoController = container.resolve(ServicoController);
 
-servicoRouter.post('/', authMiddleware, validate(createServicoSchema), servicoController.create);
-servicoRouter.get('/', authMiddleware, servicoController.findAll);
-servicoRouter.get('/:id', authMiddleware, servicoController.findById);
-servicoRouter.put('/:id', authMiddleware, servicoController.update);
-servicoRouter.delete('/:id', authMiddleware, servicoController.delete);
+servicoRouter.post('/', authMiddleware, validate(createServicoSchema), (req, res) => servicoController.create(req, res));
+servicoRouter.get('/', authMiddleware, (req, res) => servicoController.findAll(req, res));
+servicoRouter.get('/:id', authMiddleware, (req, res) => servicoController.findById(req, res));
+servicoRouter.put('/:id', authMiddleware, (req, res) => servicoController.update(req, res));
+servicoRouter.delete('/:id', authMiddleware, (req, res) => servicoController.delete(req, res));
 
 export default servicoRouter;

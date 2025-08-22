@@ -11,11 +11,11 @@ import { container } from 'tsyringe';
 const profissionalRouter = Router();
 const profissionalController = container.resolve(ProfissionalController);
 
-profissionalRouter.post('/', authMiddleware, authorize([Role.ADMIN]), validate(createProfissionalSchema), profissionalController.create);
-profissionalRouter.get('/', authMiddleware, profissionalController.findAll);
-profissionalRouter.get('/:id', authMiddleware, profissionalController.findById);
-profissionalRouter.put('/:id', authMiddleware, validate(updateProfissionalSchema), profissionalController.update);
-profissionalRouter.delete('/:id', authMiddleware, profissionalController.delete);
+profissionalRouter.post('/', authMiddleware, authorize([Role.ADMIN]), validate(createProfissionalSchema), (req, res) => profissionalController.create(req, res));
+profissionalRouter.get('/', authMiddleware, (req, res) => profissionalController.findAll(req, res));
+profissionalRouter.get('/:id', authMiddleware, (req, res) => profissionalController.findById(req, res));
+profissionalRouter.put('/:id', authMiddleware, validate(updateProfissionalSchema), (req, res) => profissionalController.update(req, res));
+profissionalRouter.delete('/:id', authMiddleware, (req, res) => profissionalController.delete(req, res));
 
 profissionalRouter.use('/:profissionalId/horarios', horarioRouter);
 
