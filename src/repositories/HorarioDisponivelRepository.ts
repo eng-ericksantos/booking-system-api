@@ -1,8 +1,6 @@
 import { injectable, singleton } from 'tsyringe';
+import { HorarioDisponivelDTO } from '../models/dtos/HorarioDisponivel.dto';
 import { prisma } from '../shared/prisma';
-import { HorarioDisponivel } from '@prisma/client';
-
-export type HorarioCreateDTO = Omit<HorarioDisponivel, 'id'>;
 @singleton()
 @injectable()
 export default class HorarioDisponivelRepository {
@@ -12,12 +10,18 @@ export default class HorarioDisponivelRepository {
         });
     }
 
-    async create(data: HorarioCreateDTO) {
+    async create(data: HorarioDisponivelDTO) {
         return await prisma.horarioDisponivel.create({ data });
     }
 
     async delete(id: string) {
         return await prisma.horarioDisponivel.delete({ where: { id } });
+    }
+
+    async findById(id: string) {
+        return prisma.horarioDisponivel.findUnique({
+            where: { id },
+        });
     }
 
     async findByProfissionalAndDia(profissionalId: string, diaDaSemana: number) {

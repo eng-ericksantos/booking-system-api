@@ -3,6 +3,7 @@ import request from 'supertest';
 import { app } from '../../app';
 import { prisma } from '../../shared/prisma';
 import bcrypt from 'bcryptjs';
+import { randomUUID } from 'crypto';
 
 describe('Testes para a Rota de Horários Disponíveis', () => {
     let adminToken: string;
@@ -69,7 +70,6 @@ describe('Testes para a Rota de Horários Disponíveis', () => {
             .send({ diaDaSemana: 2, horaInicio: '16:00', horaFim: '19:00' });
 
         expect(response.status).toBe(409);
-        // CORREÇÃO AQUI: A chave da mensagem de erro é "message"
         expect(response.body.message).toContain('sobreposto');
     });
 
@@ -94,5 +94,17 @@ describe('Testes para a Rota de Horários Disponíveis', () => {
             .set('Authorization', `Bearer ${adminToken}`);
 
         expect(getResponse.body.length).toBe(0);
+    });
+
+    it('NÃO deve ser capaz de deletar um horário com um ID inválido', async () => {
+        const fakeId = randomUUID(); // Gera um ID aleatório que não existe no banco
+
+        const response = await request(app)
+            .delete(`/api/profissionais/${profissionalId}/horarios/${fakeId}`)
+            .set('Authorization', `Bearer ${adminToken}`);
+
+        // Esperamos um 404, pois o serviço agora lança um erro "Não encontrado"
+        expect(response.status).toBe(404);
+        expect(response.body.message).toBe('Horário não encontrado.');
     });
 });

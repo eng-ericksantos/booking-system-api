@@ -1,12 +1,8 @@
 import bcrypt from 'bcryptjs';
 import jwt, { Secret } from 'jsonwebtoken';
-import UsuarioRepository from '../repositories/UsuarioRepository';
 import { inject, injectable, singleton } from 'tsyringe';
-
-type LoginDTO = {
-    email: string;
-    senha: string;
-};
+import UsuarioRepository from '../repositories/UsuarioRepository';
+import { LoginDTO } from '../models/dtos/Login.dto';
 
 @singleton()
 @injectable()

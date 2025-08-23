@@ -1,5 +1,7 @@
 import { inject, injectable, singleton } from 'tsyringe';
-import HorarioDisponivelRepository, { HorarioCreateDTO } from '../repositories/HorarioDisponivelRepository';
+import { HorarioDisponivelDTO } from '../models/dtos/HorarioDisponivel.dto';
+import { IAuthenticatedUser } from '../models/interfaces/IAuthenticatedUser.interface';
+import HorarioDisponivelRepository from '../repositories/HorarioDisponivelRepository';
 import ProfissionalService from './ProfissionalService';
 
 @singleton()
@@ -11,15 +13,15 @@ export default class HorarioDisponivelService {
         @inject('ProfissionalService') private profissionalService: ProfissionalService
     ) { }
 
-    async findByProfissionalId(profissionalId: string) {
-        await this.profissionalService.findById(profissionalId);
+    async findByProfissionalId(profissionalId: string, usuarioLogado: IAuthenticatedUser) {
+        await this.profissionalService.findById(profissionalId, usuarioLogado);
         return await this.horarioDisponivelRepository.findByProfissionalId(profissionalId);
     }
 
-    async create(data: HorarioCreateDTO) {
+    async create(data: HorarioDisponivelDTO, usuarioLogado: IAuthenticatedUser) {
         const { profissionalId, diaDaSemana, horaInicio, horaFim } = data;
 
-        await this.profissionalService.findById(profissionalId);
+        await this.profissionalService.findById(profissionalId, usuarioLogado);
 
         const horariosExistentes = await this.horarioDisponivelRepository.findByProfissionalAndDia(
             profissionalId,
@@ -39,7 +41,15 @@ export default class HorarioDisponivelService {
     }
 
     async delete(id: string) {
-        // TODO Adicionar uma lógica para checar se o horário existe antes de deletar
-        return await this.horarioDisponivelRepository.delete(id);
+        // 1. Verifica se o horário que se quer deletar realmente existe
+        const horarioExiste = await this.horarioDisponivelRepository.findById(id);
+
+        // 2. Se não existir, lança um erro claro
+        if (!horarioExiste) {
+            throw new Error('Horário não encontrado.');
+        }
+
+        // 3. Se existir, prossegue com a deleção
+        await this.horarioDisponivelRepository.delete(id);
     }
 }

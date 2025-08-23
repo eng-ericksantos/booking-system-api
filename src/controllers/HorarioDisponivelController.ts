@@ -13,13 +13,13 @@ export default class HorarioDisponivelController {
         const { profissionalId } = req.params;
 
         const data = { ...req.body, profissionalId };
-        const horario = await this.horarioDisponivelService.create(data);
+        const horario = await this.horarioDisponivelService.create(data, req.usuario);
         res.status(201).json(horario);
     }
 
     async findByProfissionalId(req: Request, res: Response) {
         const { profissionalId } = req.params;
-        const horarios = await this.horarioDisponivelService.findByProfissionalId(profissionalId);
+        const horarios = await this.horarioDisponivelService.findByProfissionalId(profissionalId, req.usuario);
         res.status(200).json(horarios);
     }
 

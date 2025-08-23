@@ -6,71 +6,82 @@ import bcrypt from 'bcryptjs';
 
 describe('Rotas de Profissionais', () => {
     let adminToken: string;
+    let profissionalToken: string;
+    let profissionalId: string;
+    let outroProfissionalId: string;
 
-    // Antes de todos os testes, criamos um usuário ADMIN e fazemos login para obter o token
     beforeAll(async () => {
-        // Limpa o banco para garantir um estado inicial limpo
+        await prisma.agendamento.deleteMany();
+        await prisma.horarioDisponivel.deleteMany();
         await prisma.profissional.deleteMany();
         await prisma.usuario.deleteMany();
 
-        // Cria o usuário ADMIN no banco de dados de teste
-        const senhaHash = await bcrypt.hash('admin_password_test', 8);
+        // Cria usuário ADMIN e faz login
+        const senhaHashAdmin = await bcrypt.hash('admin_password_test', 8);
         await prisma.usuario.create({
-            data: {
-                email: 'admin.test@example.com',
-                senha: senhaHash,
-                role: 'ADMIN',
-            },
+            data: { email: 'admin.prof.test@example.com', senha: senhaHashAdmin, role: 'ADMIN' }
         });
+        const loginAdminResponse = await request(app).post('/api/login').send({ email: 'admin.prof.test@example.com', senha: 'admin_password_test' });
+        adminToken = loginAdminResponse.body.token;
 
-        // Faz o login para obter o token
-        const loginResponse = await request(app)
-            .post('/api/login')
-            .send({
-                email: 'admin.test@example.com',
-                senha: 'admin_password_test',
-            });
+        // Admin cria o primeiro profissional (Profissional A)
+        const profAResponse = await request(app).post('/api/profissionais').set('Authorization', `Bearer ${adminToken}`).send({ nome: 'Profissional A', email: 'prof.a@example.com', senha: 'senha123' });
+        profissionalId = profAResponse.body.id;
 
-        adminToken = loginResponse.body.token; // Salva o token para usar nos testes
+        // Admin cria o segundo profissional (Profissional B)
+        const profBResponse = await request(app).post('/api/profissionais').set('Authorization', `Bearer ${adminToken}`).send({ nome: 'Profissional B', email: 'prof.b@example.com', senha: 'senha123' });
+        outroProfissionalId = profBResponse.body.id;
+
+        // Faz login como o primeiro profissional (Profissional A)
+        const loginProfResponse = await request(app).post('/api/login').send({ email: 'prof.a@example.com', senha: 'senha123' });
+        profissionalToken = loginProfResponse.body.token;
     });
 
     afterAll(async () => {
         await prisma.$disconnect();
     });
 
-    it('deve ser capaz de criar um novo profissional QUANDO autenticado como ADMIN', async () => {
+    it('um PROFISSIONAL deve ser capaz de ver seu próprio perfil', async () => {
         const response = await request(app)
-            .post('/api/profissionais')
-            .set('Authorization', `Bearer ${adminToken}`) // Usa o token de ADMIN
-            .send({
-                nome: 'Dr. Teste',
-                email: 'dr.teste@example.com',
-                senha: 'senha123',
-            });
-
-        expect(response.status).toBe(201);
-        expect(response.body).toHaveProperty('id');
-        expect(response.body.usuario.email).toBe('dr.teste@example.com');
-    });
-
-    it('NÃO deve ser capaz de criar um profissional sem um token', async () => {
-        const response = await request(app)
-            .post('/api/profissionais')
-            .send({
-                nome: 'Dr. Sem Token',
-                email: 'sem.token@example.com',
-                senha: 'senha123',
-            });
-
-        expect(response.status).toBe(401); // Espera falha por falta de autenticação
-    });
-
-    it('deve ser capaz de listar todos os profissionais QUANDO autenticado', async () => {
-        const response = await request(app)
-            .get('/api/profissionais')
-            .set('Authorization', `Bearer ${adminToken}`); // Usa o token de ADMIN
+            .get(`/api/profissionais/${profissionalId}`)
+            .set('Authorization', `Bearer ${profissionalToken}`); // Usando token do Profissional A
 
         expect(response.status).toBe(200);
-        expect(response.body).toBeInstanceOf(Array);
+        expect(response.body.id).toBe(profissionalId);
+    });
+
+    it('NÃO deve permitir que um PROFISSIONAL veja o perfil de outro profissional', async () => {
+        const response = await request(app)
+            .get(`/api/profissionais/${outroProfissionalId}`) // Tentando ver o Profissional B
+            .set('Authorization', `Bearer ${profissionalToken}`); // Usando token do Profissional A
+
+        expect(response.status).toBe(403); // Forbidden
+        expect(response.body.error).toContain('Acesso negado');
+    });
+
+    it('um ADMIN deve ser capaz de ver o perfil de qualquer profissional', async () => {
+        const response = await request(app)
+            .get(`/api/profissionais/${outroProfissionalId}`) // Admin vendo o Profissional B
+            .set('Authorization', `Bearer ${adminToken}`); // Usando token de ADMIN
+
+        expect(response.status).toBe(200);
+        expect(response.body.id).toBe(outroProfissionalId);
+    });
+
+    it('NÃO deve permitir que um PROFISSIONAL liste todos os profissionais', async () => {
+        const response = await request(app)
+            .get('/api/profissionais')
+            .set('Authorization', `Bearer ${profissionalToken}`);
+
+        expect(response.status).toBe(403); // Forbidden
+    });
+
+    it('um ADMIN deve ser capaz de listar todos os profissionais', async () => {
+        const response = await request(app)
+            .get('/api/profissionais')
+            .set('Authorization', `Bearer ${adminToken}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body.length).toBeGreaterThanOrEqual(2);
     });
 });

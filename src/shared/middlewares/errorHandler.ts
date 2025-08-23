@@ -10,19 +10,26 @@ export const errorHandler = (
     console.error(error); // Log do erro para debug
 
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        // Erro conhecido do Prisma (ex: registro não encontrado, violação de constraint)
         if (error.code === 'P2025') {
             return res.status(404).json({ message: 'Recurso não encontrado.' });
         }
         return res.status(409).json({ message: `Erro de banco de dados: ${error.message}` });
     }
 
-    // Nossos erros de negócio personalizados
     if (error.message.includes('não encontrado') || error.message.includes('inválido')) {
         return res.status(404).json({ message: error.message });
     }
 
-    if (error.message.includes('sobreposto') || error.message.includes('indisponível')) {
+    if (error.message.includes('Acesso negado')) {
+        return res.status(403).json({ message: error.message });
+    }
+
+    // Erros de conflito de regra de negócio
+    if (
+        error.message.includes('sobreposto') ||
+        error.message.includes('indisponível') ||
+        error.message.includes('não atende')
+    ) {
         return res.status(409).json({ message: error.message });
     }
 
