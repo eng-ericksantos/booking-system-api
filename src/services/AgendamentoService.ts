@@ -5,6 +5,7 @@ import ProfissionalService from './ProfissionalService';
 import HorarioDisponivelRepository from '../repositories/HorarioDisponivelRepository';
 import { StatusAgendamento } from '@prisma/client';
 import { inject, injectable, singleton } from 'tsyringe';
+import { IAuthenticatedUser } from '../models/interfaces/IAuthenticatedUser.interface';
 
 @singleton()
 @injectable()
@@ -27,12 +28,12 @@ export default class AgendamentoService {
         return this.agendamentoRepository.updateStatus(id, status);
     }
 
-    public async create(data: AgendamentoCreateDTO) {
+    public async create(data: AgendamentoCreateDTO, usuarioLogado: IAuthenticatedUser) {
         const { servicoId, profissionalId, data: dataAgendamento } = data;
 
         // --- 1. Validações de Existência ---
         const servico = await this.servicoService.findById(servicoId);
-        await this.profissionalService.findById(profissionalId);
+        await this.profissionalService.findById(profissionalId, usuarioLogado);
 
         // --- 2. Validação da Data/Hora do Agendamento ---
         const dataInicio = new Date(dataAgendamento);

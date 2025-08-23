@@ -10,8 +10,7 @@ export default class AgendamentoController {
     ) { }
 
     public async create(req: Request, res: Response): Promise<Response> {
-        // 3. Usa a instância do serviço que foi injetada e armazenada na propriedade da classe
-        const resultado = await this.agendamentoService.create(req.body);
+        const resultado = await this.agendamentoService.create(req.body, req.usuario);
         return res.status(201).json(resultado);
     }
 
