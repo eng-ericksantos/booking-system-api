@@ -18,6 +18,7 @@ import agendamentoRouter from './routes/agendamento.routes';
 // Imports do swagger
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger';
+import healthRouter from './routes/health.routes';
 
 const app = express();
 
@@ -39,12 +40,8 @@ const limiter = rateLimit({
     message: 'Muitas requisições enviadas deste IP, por favor tente novamente após 15 minutos.'
 });
 
+app.use('/api', healthRouter); // Uma rota de "health check" para verificar se a API está no ar
 app.use('/api', limiter); // Aplica o rate limit a todas as rotas /api
-
-// Uma rota de "health check" para verificar se a API está no ar
-app.get('/health', (req: Request, res: Response) => {
-    res.status(200).json({ status: 'API is running!' });
-});
 
 // Rotas da API
 app.use('/api/servicos', servicoRouter);
