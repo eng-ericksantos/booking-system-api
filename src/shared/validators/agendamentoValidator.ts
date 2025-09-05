@@ -3,11 +3,8 @@ import { StatusAgendamento } from '@prisma/client';
 
 export const createAgendamentoSchema = z.object({
     body: z.object({
-        servicoId: z.string().uuid({ message: 'ID do serviço é inválido.' }),
-        profissionalId: z.string().uuid({ message: 'ID do profissional é inválido.' }),
-        nomeCliente: z.string().min(3, { message: 'Nome do cliente é obrigatório.' }),
-        telefoneCliente: z.string().min(10, { message: 'Telefone do cliente é inválido.' }),
-
+        servicoId: z.uuid({ message: 'ID do serviço é inválido.' }),
+        profissionalId: z.uuid({ message: 'ID do profissional é inválido.' }),
         // Removemos o objeto de configuração. Se a data for inválida,
         // o Zod usará sua mensagem padrão, que será capturada pelo nosso errorHandler.
         data: z.coerce.date(),

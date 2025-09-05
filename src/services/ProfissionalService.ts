@@ -30,12 +30,16 @@ export default class ProfissionalService {
             throw new Error('Profissional não encontrado');
         }
 
-        // REGRA DE NEGÓCIO:
-        // Permite o acesso se:
-        // 1. O usuário logado for um ADMIN.
-        // 2. O 'usuarioId' do profissional que está sendo buscado for o mesmo do usuário logado.
-        if (usuarioLogado.role !== Role.ADMIN && profissional.usuarioId !== usuarioLogado.id) {
-            throw new Error('Acesso negado. Você não tem permissão para ver este perfil.');
+        // --- NOVA LÓGICA DE AUTORIZAÇÃO ---
+        // 1. Se o usuário for ADMIN ou CLIENTE, ele pode ver qualquer perfil.
+        if (usuarioLogado.role === Role.ADMIN || usuarioLogado.role === Role.CLIENTE) {
+            return profissional;
+        }
+
+        // 2. Se a regra acima não se aplicar, significa que o usuário é um PROFISSIONAL.
+        //    Neste caso, ele só pode ver o próprio perfil.
+        if (profissional.usuarioId !== usuarioLogado.id) {
+            throw new Error('Acesso negado. Um profissional só pode ver o próprio perfil.');
         }
 
         return profissional;

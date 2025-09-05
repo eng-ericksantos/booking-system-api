@@ -58,7 +58,10 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
-      # Passo 4: Compila o código TypeScript para JavaScript para checar erros de tipo
+      # Passo 4: Compila o código TypeScript para JavaScript para checar erros de tipo e roda o Lint
+      - name: Executar o Linter
+        run: npm run lint
+
       - name: Compilar o código
         run: npm run build
       

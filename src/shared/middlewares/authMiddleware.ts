@@ -42,7 +42,7 @@ export function authMiddleware(req: Request, res: Response, next: NextFunction) 
 
         // 5. Permite que a requisição continue
         return next();
-    } catch (error) {
+    } catch {
         return res.status(401).json({ error: 'Token inválido ou expirado.' });
     }
 }

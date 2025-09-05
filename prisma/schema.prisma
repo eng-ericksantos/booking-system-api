@@ -20,16 +20,27 @@ enum StatusAgendamento {
 enum Role {
   ADMIN
   PROFISSIONAL
+  CLIENTE
 }
 
 model Usuario {
   id           String  @id @default(uuid())
   email        String  @unique
-  senha        String
+  senha        String?
   role         Role    @default(PROFISSIONAL)
   
-  // Relação opcional com Profissional
+  // Relação opcional com Profissional e Cliente
   profissional Profissional?
+  cliente      Cliente?
+}
+
+model Cliente {
+  id        String @id @default(uuid())
+  nome      String
+  telefone  String
+  usuarioId String      @unique
+  usuario   Usuario     @relation(fields: [usuarioId], references: [id])
+  agendamentos Agendamento[]
 }
 
 model Servico {
@@ -63,12 +74,21 @@ model Agendamento {
   id              String @id @default(uuid())
   data            DateTime
   status          StatusAgendamento @default(Confirmado) // Ex: Confirmado, Cancelado, Realizado
-  nomeCliente     String
-  telefoneCliente String
+  clienteId       String
+  cliente         Cliente           @relation(fields: [clienteId], references: [id])
   servicoId       String
   servico         Servico @relation(fields: [servicoId], references: [id])
   profissionalId  String
   profissional    Profissional @relation(fields: [profissionalId], references: [id])
   createdAt       DateTime @default(now()) // Valor padrão será a data e a hora exatas do momento da criação do registro
   updateAt        DateTime @updatedAt // Data e hora atuais toda vez que o registro for modificado
+}
+
+model OneTimePassword {
+  id        String   @id @default(uuid())
+  email     String
+  code      String
+  expiresAt DateTime
+  
+  @@map("one_time_passwords") // Mapeia para o nome da tabela "one_time_passwords"
 }

@@ -1,6 +1,5 @@
 import { injectable, singleton } from 'tsyringe';
 import { prisma } from '../shared/prisma';
-import { Profissional } from '@prisma/client';
 
 // export type ProfissionalCreateDTO = Omit<Profissional, 'id'>;
 export type ProfissionalComUsuarioCreateDTO = {

@@ -1,13 +1,34 @@
+import { StatusAgendamento } from '@prisma/client';
 import { injectable, singleton } from 'tsyringe';
 import { prisma } from '../shared/prisma';
-import { Agendamento, StatusAgendamento } from '@prisma/client';
 
-export type AgendamentoCreateDTO = Omit<Agendamento, 'id' | 'status' | 'createdAt' | 'updatedAt'>;
+// export type AgendamentoCreateDTO = Omit<Agendamento, 'id' | 'status' | 'createdAt' | 'updatedAt' | 'nomeCliente' | 'telefoneCliente'> & {
+//   clienteId: string;
+// };
+
+export type AgendamentoCreateDTO = {
+  data: Date;
+  servicoId: string;
+  profissionalId: string;
+  clienteId: string;
+};
 @singleton()
 @injectable()
 export default class AgendamentoRepository {
+
   async create(data: AgendamentoCreateDTO) {
-    return await prisma.agendamento.create({ data });
+    return await prisma.agendamento.create({
+      data,
+      include: {
+        profissional: {
+          select: { nome: true }
+        },
+        servico: true,
+        cliente: {
+          select: { nome: true }
+        }
+      }
+    });
   }
 
   // Busca agendamentos de um profissional que conflitem com um determinado intervalo de tempo
@@ -15,6 +36,7 @@ export default class AgendamentoRepository {
     return await prisma.agendamento.findFirst({
       where: {
         profissionalId: profissionalId,
+        status: { not: 'Cancelado' }, // Não considerar agendamentos cancelados como conflito
         // A lógica de conflito:
         // Um conflito existe se um agendamento existente:
         // - Começa durante o novo agendamento OU
@@ -36,7 +58,8 @@ export default class AgendamentoRepository {
     return await prisma.agendamento.findMany({
       include: {
         servico: true,
-        profissional: true
+        profissional: true,
+        cliente: true,
       }
     });
   }

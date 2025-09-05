@@ -1,29 +1,30 @@
+import cors from 'cors';
+import 'dotenv/config';
+import express from 'express';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import { pinoHttp } from 'pino-http';
 import 'reflect-metadata';
 import './shared/container';
-import 'dotenv/config';
-import express, { Request, Response } from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
-import { pinoHttp } from 'pino-http';
 import logger from './shared/logs/logger';
 import { errorHandler } from './shared/middlewares/errorHandler';
 
 // Imports das rotas
-import authRouter from './routes/auth.routes';
-import servicoRouter from './routes/servico.routes';
-import profissionalRouter from './routes/profissional.routes';
 import agendamentoRouter from './routes/agendamento.routes';
+import authRouter from './routes/auth.routes';
+import profissionalRouter from './routes/profissional.routes';
+import servicoRouter from './routes/servico.routes';
 
 // Imports do swagger
 import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './config/swagger';
 import healthRouter from './routes/health.routes';
+import publicAuthRouter from './routes/publicAuth.routes';
 
 const app = express();
 
 // Middlewares
-// app.use(pinoHttp({ logger }));
+app.use(pinoHttp({ logger }));
 app.use(helmet());
 app.use(cors({
     origin: process.env.FRONTEND_URL, // Permite apenas a origem definida na variável de ambiente
@@ -47,6 +48,7 @@ app.use('/api', limiter); // Aplica o rate limit a todas as rotas /api
 app.use('/api/servicos', servicoRouter);
 app.use('/api/profissionais', profissionalRouter);
 app.use('/api/agendamentos', agendamentoRouter);
+app.use('/api/public', publicAuthRouter);
 app.use('/api', authRouter);
 
 // Rota da Documentação Swagger

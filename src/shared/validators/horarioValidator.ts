@@ -14,14 +14,14 @@ export const createHorarioSchema = z.object({
     }),
 
     params: z.object({
-        profissionalId: z.string().uuid({ message: 'ID de profissional inválido.' }),
+        profissionalId: z.uuid({ message: 'ID de profissional inválido.' }),
     }),
 });
 
 // Validador para quando precisarmos do ID do horário (ex: para deletar)
 export const horarioIdSchema = z.object({
     params: z.object({
-        id: z.string().uuid({ message: 'ID de horário inválido.' }),
-        profissionalId: z.string().uuid({ message: 'ID de profissional inválido.' }),
+        id: z.uuid({ message: 'ID de horário inválido.' }),
+        profissionalId: z.uuid({ message: 'ID de profissional inválido.' }),
     })
 });

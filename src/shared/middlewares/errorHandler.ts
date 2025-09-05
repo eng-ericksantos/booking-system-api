@@ -2,10 +2,10 @@ import { Request, Response, NextFunction } from 'express';
 import { Prisma } from '@prisma/client';
 
 export const errorHandler = (
-    error: Error,
-    req: Request,
-    res: Response,
-    next: NextFunction
+    error: Error, 
+    req: Request, 
+    res: Response, 
+    _next: NextFunction
 ) => {
     console.error(error); // Log do erro para debug
 
