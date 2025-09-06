@@ -13,8 +13,9 @@ export default class AuthService {
     ) { }
 
     async login({ email, senha }: LoginDTO) {
+
         const usuario = await this.usuarioRepository.findByEmail(email);
-        if (!usuario) {
+        if (!usuario || !usuario.senha) {
             throw new Error('E-mail ou senha inválidos.');
         }
 
